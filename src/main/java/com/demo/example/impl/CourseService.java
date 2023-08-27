@@ -46,17 +46,22 @@ public class CourseService {
 
 	public String updateCourseWithCourseId(int credit, String title, Long courseId) {
 		logger.info("Inside CourseService.updateCourseWithCourseId:Entry");
+		String outputMessage = "Please select right course";
 		try {
-			int updatedRecord = courseRepository.updateCourseCreditByCourseId(credit, title, courseId);
-			if (updatedRecord > 0) {
-				return "Course updated successfully";
-			} else {
-				return "Please enter a valid course name";
+			Optional<Course> course = courseRepository.findById(courseId);
+			if(course.isPresent()) {
+				int updatedRecord = courseRepository.updateCourseCreditByCourseId(credit, title, courseId);
+				if (updatedRecord > 0) {
+					outputMessage= "Course updated successfully";
+				}
+			}else {
+				outputMessage= "Please select right course";
 			}
 		} catch (Exception ex) {
 			logger.error("Inside CourseService.updateCourseWithCourseId:Exception: " + ex.getMessage());
-			return "An error occurred while updating the course: " + ex.getMessage();
+			outputMessage= "An error occurred while updating the course: " + ex.getMessage();
 		}
+		return outputMessage;
 	}
 
 	public String deleteCourse(Long courseId) {

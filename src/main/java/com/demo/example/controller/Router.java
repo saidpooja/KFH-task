@@ -25,63 +25,31 @@ import java.security.Principal;
 @CrossOrigin
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("hasAuthority('ROLE_ADMIN') or hasAuthority('ROLE_STUDENT')")
 public class Router {
 	public static final String DEFAULT_ROLE ="ROLE_USER";
-	private static final Logger logger = LoggerFactory.getLogger(Router.class);
 	
 	@Autowired
 	private StudentService studentService;
-	
-	@Autowired
-	private CourseService courseService;
-
-	// Course API
-	@GetMapping("/getCourses")
-	public List<Course> getCourses() {
-		logger.info("Inside getCourse:Entry");
-		return courseService.getCourses();
-		 
-	}
-
-	@PostMapping("/addCourse")
-	public String addCourse(@RequestBody Course course) {
-		return courseService.addCourse(course);
-
-	}
-	
-	@PutMapping("/updateCourse")
-	public String updateCourse(
-			@RequestParam(name = "title") String courseName,
-			@RequestParam(name = "credit") int credit,
-			@RequestParam(name = "courseId") Long courseId) {
-		return courseService.updateCourseWithCourseId(credit,courseName,courseId);
-
-	}
-
-	@DeleteMapping("/deleteCourse")
-	public String deleteCourseById(@RequestParam(name = "courseId", required = true) Long courseId) {
-		return courseService.deleteCourse(courseId);
-	}
-
 	// Student API
 	
 	//while adding user,please enter unique email ID
-	@PostMapping("/addStudent")
+	@PostMapping("/student/addStudent")
 	public String addStudent(@RequestBody Student student) {
 		return studentService.addStudent(student);
 	}
 	
-	@GetMapping("/getStudents")
+	@GetMapping("/student/getStudents")
 	public List<Student> getStudentList() {
 		return studentService.getStudentList();
 	}
 	
-	@DeleteMapping("/deleteStudent")
+	@DeleteMapping("/student/deleteStudent")
 	public String deleteStudent(@RequestParam(name = "studentId", required = true) Long studentId) {
 		return studentService.deleteStudent(studentId);
 	}
 	
-	@PostMapping("/updateCoursesForOneStudent/{studentId}")
+	@PostMapping("/student/updateCoursesForOneStudent/{studentId}")
 	public String updateCoursesForStudent(
 			@PathVariable(name = "studentId") Long studentId,
 			@RequestBody List<Course> courses) {
@@ -89,7 +57,7 @@ public class Router {
 		return studentService.updateStudentCourses(studentId, courses);
 	}
 	
-	@GetMapping("/getStudentWithCourses")
+	@GetMapping("/student/getStudentWithCourses")
 	public Student getStudentWithCourses(
 			@RequestParam(name="studentId", required = true)Long studentId
 			) {
@@ -126,13 +94,4 @@ public class Router {
 	public void setStudentService(StudentService studentService) {
 		this.studentService = studentService;
 	}
-
-	public CourseService getCourseService() {
-		return courseService;
-	}
-
-	public void setCourseService(CourseService courseService) {
-		this.courseService = courseService;
-	}
-	
 }
